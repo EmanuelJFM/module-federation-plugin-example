@@ -11,62 +11,27 @@
 			"prefix": "app",
 			"architect": {
 				"build": {
-					"builder": "@angular-devkit/build-angular:browser",
-					"options": {
-						"outputPath": "dist/shell",
-						"index": "projects/shell/src/index.html",
-						"main": "projects/shell/src/main.ts",
-						"polyfills": [
-							"zone.js"
-						],
-						"tsConfig": "projects/shell/tsconfig.app.json",
-						"assets": [
-							"projects/shell/src/favicon.ico",
-							"projects/shell/src/assets"
-						],
-						"styles": [
-							"projects/shell/src/styles.css"
-						],
-						"scripts": []
-					},
+					"builder": "@angular-architects/native-federation:build",
+					"options": {},
 					"configurations": {
 						"production": {
-							"budgets": [
-								{
-									"type": "initial",
-									"maximumWarning": "500kb",
-									"maximumError": "1mb"
-								},
-								{
-									"type": "anyComponentStyle",
-									"maximumWarning": "2kb",
-									"maximumError": "4kb"
-								}
-							],
-							"outputHashing": "all"
+							"target": "shell:esbuild:production"
 						},
 						"development": {
-							"buildOptimizer": false,
-							"optimization": false,
-							"vendorChunk": true,
-							"extractLicenses": false,
-							"sourceMap": true,
-							"namedChunks": true
+							"target": "shell:esbuild:development",
+							"dev": true
 						}
 					},
 					"defaultConfiguration": "production"
 				},
 				"serve": {
-					"builder": "@angular-devkit/build-angular:dev-server",
-					"configurations": {
-						"production": {
-							"browserTarget": "shell:build:production"
-						},
-						"development": {
-							"browserTarget": "shell:build:development"
-						}
-					},
-					"defaultConfiguration": "development"
+					"builder": "@angular-architects/native-federation:build",
+					"options": {
+						"target": "shell:serve-original:development",
+						"rebuildDelay": 0,
+						"dev": true,
+						"port": 0
+					}
 				},
 				"extract-i18n": {
 					"builder": "@angular-devkit/build-angular:extract-i18n",
@@ -91,34 +56,26 @@
 						],
 						"scripts": []
 					}
-				}
-			}
-		},
-		"mfe1": {
-			"projectType": "application",
-			"schematics": {},
-			"root": "projects/mfe1",
-			"sourceRoot": "projects/mfe1/src",
-			"prefix": "app",
-			"architect": {
-				"build": {
-					"builder": "@angular-devkit/build-angular:browser",
+				},
+				"esbuild": {
+					"builder": "@angular-devkit/build-angular:application",
 					"options": {
-						"outputPath": "dist/mfe1",
-						"index": "projects/mfe1/src/index.html",
-						"main": "projects/mfe1/src/main.ts",
+						"outputPath": "dist/shell",
+						"index": "projects/shell/src/index.html",
 						"polyfills": [
-							"zone.js"
+							"zone.js",
+							"es-module-shims"
 						],
-						"tsConfig": "projects/mfe1/tsconfig.app.json",
+						"tsConfig": "projects/shell/tsconfig.app.json",
 						"assets": [
-							"projects/mfe1/src/favicon.ico",
-							"projects/mfe1/src/assets"
+							"projects/shell/src/favicon.ico",
+							"projects/shell/src/assets"
 						],
 						"styles": [
-							"projects/mfe1/src/styles.css"
+							"projects/shell/src/styles.css"
 						],
-						"scripts": []
+						"scripts": [],
+						"browser": "projects/shell/src/main.ts"
 					},
 					"configurations": {
 						"production": {
@@ -137,9 +94,7 @@
 							"outputHashing": "all"
 						},
 						"development": {
-							"buildOptimizer": false,
 							"optimization": false,
-							"vendorChunk": true,
 							"extractLicenses": false,
 							"sourceMap": true,
 							"namedChunks": true
@@ -147,17 +102,52 @@
 					},
 					"defaultConfiguration": "production"
 				},
-				"serve": {
+				"serve-original": {
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"configurations": {
 						"production": {
-							"browserTarget": "mfe1:build:production"
+							"buildTarget": "shell:esbuild:production"
 						},
 						"development": {
-							"browserTarget": "mfe1:build:development"
+							"buildTarget": "shell:esbuild:development"
 						}
 					},
-					"defaultConfiguration": "development"
+					"defaultConfiguration": "development",
+					"options": {
+						"port": 4200
+					}
+				}
+			}
+		},
+		"mfe1": {
+			"projectType": "application",
+			"schematics": {},
+			"root": "projects/mfe1",
+			"sourceRoot": "projects/mfe1/src",
+			"prefix": "app",
+			"architect": {
+				"build": {
+					"builder": "@angular-architects/native-federation:build",
+					"options": {},
+					"configurations": {
+						"production": {
+							"target": "mfe1:esbuild:production"
+						},
+						"development": {
+							"target": "mfe1:esbuild:development",
+							"dev": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve": {
+					"builder": "@angular-architects/native-federation:build",
+					"options": {
+						"target": "mfe1:serve-original:development",
+						"rebuildDelay": 0,
+						"dev": true,
+						"port": 0
+					}
 				},
 				"extract-i18n": {
 					"builder": "@angular-devkit/build-angular:extract-i18n",
@@ -181,6 +171,66 @@
 							"projects/mfe1/src/styles.css"
 						],
 						"scripts": []
+					}
+				},
+				"esbuild": {
+					"builder": "@angular-devkit/build-angular:application",
+					"options": {
+						"outputPath": "dist/mfe1",
+						"index": "projects/mfe1/src/index.html",
+						"polyfills": [
+							"zone.js",
+							"es-module-shims"
+						],
+						"tsConfig": "projects/mfe1/tsconfig.app.json",
+						"assets": [
+							"projects/mfe1/src/favicon.ico",
+							"projects/mfe1/src/assets"
+						],
+						"styles": [
+							"projects/mfe1/src/styles.css"
+						],
+						"scripts": [],
+						"browser": "projects/mfe1/src/main.ts"
+					},
+					"configurations": {
+						"production": {
+							"budgets": [
+								{
+									"type": "initial",
+									"maximumWarning": "500kb",
+									"maximumError": "1mb"
+								},
+								{
+									"type": "anyComponentStyle",
+									"maximumWarning": "2kb",
+									"maximumError": "4kb"
+								}
+							],
+							"outputHashing": "all"
+						},
+						"development": {
+							"optimization": false,
+							"extractLicenses": false,
+							"sourceMap": true,
+							"namedChunks": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve-original": {
+					"builder": "@angular-devkit/build-angular:dev-server",
+					"configurations": {
+						"production": {
+							"buildTarget": "mfe1:esbuild:production"
+						},
+						"development": {
+							"buildTarget": "mfe1:esbuild:development"
+						}
+					},
+					"defaultConfiguration": "development",
+					"options": {
+						"port": 4201
 					}
 				}
 			}
